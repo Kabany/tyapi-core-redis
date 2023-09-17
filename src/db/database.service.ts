@@ -91,13 +91,26 @@ export class RedisService extends DatabaseService {
    * Executes a GET or SET query for a simple value
    * @returns 
    */
-  override async query(command: "get" | "set", key: string, value?: any, exp?: number) {
-    if (command == "get") {
-      return this.connection.get(key)
+  override async query(action: "get" | "set" | "getJson" | "setJson" | "del", key: string, value?: any, exp?: number) {
+    if (action == "get") {
+      return await this.connection.get(key)
+    } else if (action == "set") {
+      return await this.connection.set(key, value, exp != null ? {EX: exp} : {})
+    } else if (action == "getJson") {
+      let data = await this.connection.get(key)
+      if (data != null) {
+        return JSON.parse(data)
+      } else {
+        return null
+      }
+    } else if (action == "setJson") {
+      return await this.connection.set(key, JSON.stringify(value), exp != null ? {EX: exp} : {})
+    } else if (action == "del") {
+      return this.connection.del(key)
     } else {
-      return this.connection.set(key, value, exp != null ? {EX: exp} : {})
+      throw new TyapiError(`Invalid Redis Action '${action}'`)
     }
-  }s
+  }
 
   /** Return the Redis Client */
   getClient() {

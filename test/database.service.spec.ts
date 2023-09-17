@@ -24,15 +24,31 @@ class ExtendedService extends RedisService {
 }
 
 describe("RedisService", async () => {
-  it("should create a connection with Redis", async () => {
+  it("should create a connection with Redis and handle query commands", async () => {
     let app = new Context()
     app.mountService("logger", new Logger(LoggerMode.Console, app))
     let service = new ExtendedService(app)
     assert.equal(service.getStatus(), "READY")
     await app.mountService("database", service)
     assert.equal(service.getStatus(), "CONNECTED")
+
     await service.query("set", "hello", "world!")
-    await service.query("get", "hello")
+    let ans = await service.query("get", "hello")
+    assert.equal(ans, "world!")
+
+    await service.query("setJson", "hellomessage", {name: "demo", lastName: "test"})
+    let hans = await service.query("getJson", "hellomessage")
+    assert.equal(hans.name, "demo")
+    assert.equal(hans.lastName, "test")
+
+    await service.query("del", "hello")
+    await service.query("del", "hellomessage")
+
+    let del = await service.query("get", "hello")
+    let hdel = await service.query("getJson", "hellomessage")
+    assert.equal(del, null)
+    assert.equal(hdel, null)
+
     await app.unmountServices()
     assert.equal(service.getStatus(), undefined)
   })

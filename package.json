@@ -1,6 +1,6 @@
 {
   "name": "tyapi-core-redis",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Another Typescript NodeJS API Library for a RESTful backend. TyAPI Core Redis is an extension of TyAPI Core to handle a connection with a Redis instance.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -31,7 +31,6 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "@redis/json": "^1.0.4",
     "redis": "^4.6.8",
     "tyapi-core": "^1.2.5",
     "tyapi-utils": "^1.3.2"
